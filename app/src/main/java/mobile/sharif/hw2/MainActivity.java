@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_main);
 
+        View frame = findViewById(R.id.frame);
+        frame.setVisibility(0);
+
         SearchView simpleSearchView = (SearchView) findViewById(R.id.search); // inititate a search view
         simpleSearchView.setOnQueryTextListener(this);
 
@@ -122,8 +125,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                         style.addImage("fire-station-15",
                                 BitmapUtils.getBitmapFromDrawable(getResources().getDrawable(R.drawable.gps_icon)),
                                 true);
-                        symbolManager.addLongClickListener(symbol -> {
-
+                        symbolManager.addClickListener(symbol -> {
+                            Toast.makeText(MainActivity.this, "Symbol clicked", Toast.LENGTH_SHORT).show();
                             return false;
                         });
 
