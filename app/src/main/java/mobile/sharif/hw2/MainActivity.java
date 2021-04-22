@@ -29,6 +29,10 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
+import com.mapbox.mapboxsdk.utils.BitmapUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -39,14 +43,17 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * Use the Mapbox Core Library to receive updates when the device changes location.
  */
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, SearchView.OnQueryTextListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener,
+        SearchView.OnQueryTextListener {
 
     private static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
     private static final long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
     private MapboxMap mapboxMap;
     private MapView mapView;
     private PermissionsManager permissionsManager;
+    private Symbol symbol;
     private LocationEngine locationEngine;
+    SymbolManager symbolManager;
     private LocationChangeListeningActivityLocationCallback callback =
             new LocationChangeListeningActivityLocationCallback(this);
 
@@ -106,9 +113,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 new Style.OnStyleLoaded() {
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
+                        mapboxMap.addOnMapLongClickListener(point -> {
+                            make_marker(point);
+                            return false;
+                        });
+                        // Create symbol manager object.
+                        symbolManager = new SymbolManager(mapView, mapboxMap, style);
+                        style.addImage("fire-station-15",
+                                BitmapUtils.getBitmapFromDrawable(getResources().getDrawable(R.drawable.gps_icon)),
+                                true);
+                        symbolManager.addLongClickListener(symbol -> {
+
+                            return false;
+                        });
+
+                        // Set non-data-driven properties.
+                        symbolManager.setIconAllowOverlap(true);
+                        symbolManager.setIconTranslate(new Float[]{-4f, 5f});
+
                         enableLocationComponent(style);
                     }
                 });
+    }
+
+    private void make_marker(LatLng point) {
+        SymbolOptions symbolOptions = new SymbolOptions()
+                .withLatLng(new LatLng(point.getLatitude(), point.getLongitude()))
+                .withIconImage("fire-station-15")
+                .withIconSize(1.3f)
+                .withSymbolSortKey(10.0f);
+        symbol = symbolManager.create(symbolOptions);
     }
 
     /**
