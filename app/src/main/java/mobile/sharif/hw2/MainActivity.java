@@ -3,7 +3,9 @@ package mobile.sharif.hw2;
 import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -37,7 +39,7 @@ import androidx.appcompat.app.AppCompatActivity;
 /**
  * Use the Mapbox Core Library to receive updates when the device changes location.
  */
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, SearchView.OnQueryTextListener {
 
     private static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
     private static final long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
@@ -59,6 +61,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_main);
 
+        SearchView simpleSearchView = (SearchView) findViewById(R.id.search); // inititate a search view
+        simpleSearchView.setOnQueryTextListener(this);
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,6 +84,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Log.i("QUERY", query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        Log.i("NEW_TEXT", newText);
+        return false;
     }
 
     @Override
