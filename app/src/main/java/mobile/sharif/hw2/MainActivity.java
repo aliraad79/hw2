@@ -1,14 +1,19 @@
 package mobile.sharif.hw2;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineCallback;
@@ -51,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MapboxMap mapboxMap;
     private MapView mapView;
     private PermissionsManager permissionsManager;
-    private Symbol symbol;
+    private Symbol clicked_symbol;
     private LocationEngine locationEngine;
     SymbolManager symbolManager;
     private LocationChangeListeningActivityLocationCallback callback =
@@ -68,11 +73,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_main);
 
-        View frame = findViewById(R.id.frame);
-        frame.setVisibility(0);
-
         SearchView simpleSearchView = (SearchView) findViewById(R.id.search); // inititate a search view
         simpleSearchView.setOnQueryTextListener(this);
+
+        BottomNavigationView nav_bar = findViewById(R.id.bottom_navigation);
+        nav_bar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.bookmark:
+                        Intent detailIntent = new Intent(MainActivity.this, BookmarkActivity.class);
+                        startActivity(detailIntent);
+                        break;
+                    case R.id.setting:
+                        Intent settingIntent = new Intent(MainActivity.this, SettingActivity.class);
+                        startActivity(settingIntent);
+                        break;
+                }
+                return true;
+            }
+        });
+
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -126,7 +147,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 BitmapUtils.getBitmapFromDrawable(getResources().getDrawable(R.drawable.gps_icon)),
                                 true);
                         symbolManager.addClickListener(symbol -> {
-                            Toast.makeText(MainActivity.this, "Symbol clicked", Toast.LENGTH_SHORT).show();
+                            clicked_symbol = symbol;
+                            LatLng location = symbol.getLatLng();
+                            double lat = location.getLatitude();
+                            double lon = location.getLongitude();
+                            CameraPosition position = new CameraPosition.Builder()
+                                    .target(new LatLng(lat, lon)) // Sets the new camera position
+                                    .zoom(15) // Sets the zoom
+                                    .tilt(30) // Set the camera tilt
+                                    .build(); // Creates a CameraPosition from the builder
+
+                            mapboxMap.animateCamera(CameraUpdateFactory
+                                    .newCameraPosition(position), 7000);
                             return false;
                         });
 
@@ -145,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .withIconImage("fire-station-15")
                 .withIconSize(1.3f)
                 .withSymbolSortKey(10.0f);
-        symbol = symbolManager.create(symbolOptions);
+        symbolManager.create(symbolOptions);
     }
 
     /**

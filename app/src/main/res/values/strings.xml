@@ -5,6 +5,10 @@
     <string name="user_location_permission_explanation">Please give access to location</string>
     <string name="user_location_permission_not_granted">Access to location is not granted </string>
     <string name="submit">Submit</string>
+    <string name="map">Map</string>
+    <string name="setting">Settings</string>
+    <string name="bookmark">BookMark</string>
+    <string name="test">Test</string>
 
 
 </resources>

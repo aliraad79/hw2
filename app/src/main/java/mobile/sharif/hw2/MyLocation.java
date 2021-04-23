@@ -27,4 +27,9 @@ public class MyLocation {
     public String getName() {
         return name;
     }
+
+    public String getLocation() {
+        return String.valueOf(this.getLatitude()) + this.getLongitude();
+    }
+
 }
