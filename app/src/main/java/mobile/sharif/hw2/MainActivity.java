@@ -138,6 +138,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
                         mapboxMap.addOnMapLongClickListener(point -> {
+                            Intent modalIntent = new Intent(MainActivity.this, ModalActivity.class);
+                            startActivity(modalIntent);
                             make_marker(point);
                             return false;
                         });

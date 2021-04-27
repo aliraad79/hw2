@@ -8,7 +8,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="669dp"
+        android:layout_height="600dp"
         tools:context=".examples.basics.SimpleMapViewActivity">
 
         <SearchView
