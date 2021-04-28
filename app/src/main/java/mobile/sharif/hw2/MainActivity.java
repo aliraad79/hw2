@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         // Mapbox access token is configured here. This needs to be called either in your application
         // object or in the same activity which contains the mapview.
         Mapbox.getInstance(this, getString(R.string.access_token));
@@ -73,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_main);
 
-        SearchView simpleSearchView = (SearchView) findViewById(R.id.search); // inititate a search view
+        SearchView simpleSearchView = (SearchView) findViewById(R.id.search); // initiate a search view
         simpleSearchView.setOnQueryTextListener(this);
 
         BottomNavigationView nav_bar = findViewById(R.id.bottom_navigation);

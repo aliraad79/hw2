@@ -3,36 +3,29 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
+    <SearchView
+        android:id="@+id/search"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:background="#f00"
+        android:iconifiedByDefault="false" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/bookmarks"
         android:layout_width="match_parent"
-        android:layout_height="669dp"
-        tools:context=".examples.basics.SimpleMapViewActivity">
-
-        <SearchView
-            android:id="@+id/search"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="#f00"
-            android:iconifiedByDefault="false">
-
-        </SearchView>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/bookmarks"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-        </androidx.recyclerview.widget.RecyclerView>
-
-
-    </FrameLayout>
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0"
         app:menu="@menu/bottom_navigation_menu" />
+
+
 </LinearLayout>
