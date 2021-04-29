@@ -1,5 +1,7 @@
 package mobile.sharif.hw2;
 
+import android.annotation.SuppressLint;
+
 public class MyLocation {
     private double longitude;
     private double latitude;
@@ -29,7 +31,9 @@ public class MyLocation {
     }
 
     public String getLocation() {
-        return String.valueOf(this.getLatitude()) + this.getLongitude();
+        String lat = String.format("%.5f", latitude);
+        String lon = String.format("%.5f", longitude);
+        return lat + " " + lon;
     }
 
 }

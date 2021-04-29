@@ -9,16 +9,15 @@
 
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/LocTv"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        android:text="TextView" />
+         />
 
     <TextView
-        android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="31dp"
-        android:text="TextView" />
+        android:text="@string/location_name" />
 
     <EditText
         android:id="@+id/edit"
@@ -26,12 +25,12 @@
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="Name" />
+        android:hint="@string/enter_name" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="140dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:text="Button" />
+        android:layout_gravity="center_horizontal"
+        android:text="@string/save" />
 </LinearLayout>

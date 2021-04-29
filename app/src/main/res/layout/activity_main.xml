@@ -35,7 +35,7 @@
             android:layout_height="163dp"
             android:layout_gravity="start|bottom"
             android:background="#FFFFFF"
-            android:elevation="5dp">
+            >
 
         </FrameLayout>
 

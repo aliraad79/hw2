@@ -7,24 +7,22 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class ModalFragment extends Fragment {
 
-    private static final String ARG_PARAM1 = "latitude";
-    private static final String ARG_PARAM2 = "longitude";
+    private static final String ARG_PARAM1 = "location-string";
 
-    private double lat;
-    private double lon;
+    private String location_string;
 
     public ModalFragment() {
         // Required empty public constructor
     }
 
-    public static ModalFragment newInstance(double param1, double param2) {
+    public static ModalFragment newInstance(String param1) {
         ModalFragment fragment = new ModalFragment();
         Bundle args = new Bundle();
-        args.putDouble(ARG_PARAM1, param1);
-        args.putDouble(ARG_PARAM2, param2);
+        args.putString(ARG_PARAM1, param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -33,8 +31,7 @@ public class ModalFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            lat = getArguments().getDouble(ARG_PARAM1);
-            lon = getArguments().getDouble(ARG_PARAM2);
+            location_string = getArguments().getString(ARG_PARAM1);
         }
     }
 
@@ -42,6 +39,9 @@ public class ModalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_modal, container, false);
+        View view =  inflater.inflate(R.layout.fragment_modal, container, false);
+        TextView tv = view.findViewById(R.id.LocTv);
+        tv.setText(location_string);
+        return view;
     }
 }

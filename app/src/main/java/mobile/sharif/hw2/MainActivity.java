@@ -40,6 +40,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -134,13 +135,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 new Style.OnStyleLoaded() {
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
+
+
                         mapboxMap.addOnMapLongClickListener(point -> {
                             make_marker(point);
-                            ModalFragment fragment = ModalFragment.newInstance(point.getLatitude(), point.getLongitude());
+
                             FragmentManager fm = getSupportFragmentManager();
                             FragmentTransaction ft = fm.beginTransaction();
+                            View frame = findViewById(R.id.flFragment);
+                            MyLocation temp = new MyLocation(point.getLongitude(), point.getLatitude());
+                            ModalFragment fragment = ModalFragment.newInstance(temp.getLocation());
                             ft.replace(R.id.flFragment, fragment);
+                            ViewCompat.setElevation(frame, 5);
+                            ft.addToBackStack(null);
                             ft.commit();
+
                             return false;
                         });
                         // Create symbol manager object.
@@ -160,7 +169,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                             mapboxMap.animateCamera(CameraUpdateFactory
                                     .newCameraPosition(position), 7000);
-                            ModalFragment.newInstance(lat, lon);
+
+                            FragmentManager fm = getSupportFragmentManager();
+                            FragmentTransaction ft = fm.beginTransaction();
+                            View frame = findViewById(R.id.flFragment);
+                            MyLocation temp = new MyLocation(lon, lat);
+                            ModalFragment fragment = ModalFragment.newInstance(temp.getLocation());
+                            ft.replace(R.id.flFragment, fragment);
+                            ViewCompat.setElevation(frame, 5);
+                            ft.commit();
                             return false;
                         });
 
