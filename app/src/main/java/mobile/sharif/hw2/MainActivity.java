@@ -41,7 +41,6 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -99,20 +98,24 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 double lat = mapboxMap.getLocationComponent().getLastKnownLocation().getLatitude();
                 double lon = mapboxMap.getLocationComponent().getLastKnownLocation().getLongitude();
-                CameraPosition position = new CameraPosition.Builder()
-                        .target(new LatLng(lat, lon)) // Sets the new camera position
-                        .zoom(15) // Sets the zoom
-                        .tilt(30) // Set the camera tilt
-                        .build(); // Creates a CameraPosition from the builder
-
-                mapboxMap.animateCamera(CameraUpdateFactory
-                        .newCameraPosition(position), 7000);
+                travelToLocation(lat, lon);
             }
         });
 
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+    }
+
+    private void travelToLocation(double lat, double lon) {
+        CameraPosition position = new CameraPosition.Builder()
+                .target(new LatLng(lat, lon)) // Sets the new camera position
+                .zoom(15) // Sets the zoom
+                .tilt(30) // Set the camera tilt
+                .build(); // Creates a CameraPosition from the builder
+
+        mapboxMap.animateCamera(CameraUpdateFactory
+                .newCameraPosition(position), 7000);
     }
 
     @Override
@@ -161,14 +164,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             LatLng location = symbol.getLatLng();
                             double lat = location.getLatitude();
                             double lon = location.getLongitude();
-                            CameraPosition position = new CameraPosition.Builder()
-                                    .target(new LatLng(lat, lon)) // Sets the new camera position
-                                    .zoom(15) // Sets the zoom
-                                    .tilt(30) // Set the camera tilt
-                                    .build(); // Creates a CameraPosition from the builder
-
-                            mapboxMap.animateCamera(CameraUpdateFactory
-                                    .newCameraPosition(position), 7000);
+                            travelToLocation(lat, lon);
 
                             FragmentManager fm = getSupportFragmentManager();
                             FragmentTransaction ft = fm.beginTransaction();
