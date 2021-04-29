@@ -3,7 +3,6 @@ package mobile.sharif.hw2;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -13,8 +12,6 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineCallback;
 import com.mapbox.android.core.location.LocationEngineProvider;
@@ -34,7 +31,6 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
-import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.mapboxsdk.utils.BitmapUtils;
@@ -44,6 +40,9 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 /**
  * Use the Mapbox Core Library to receive updates when the device changes location.
@@ -56,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MapboxMap mapboxMap;
     private MapView mapView;
     private PermissionsManager permissionsManager;
-    private Symbol clicked_symbol;
     private LocationEngine locationEngine;
     SymbolManager symbolManager;
     private LocationChangeListeningActivityLocationCallback callback =
@@ -137,9 +135,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
                         mapboxMap.addOnMapLongClickListener(point -> {
-                            Intent modalIntent = new Intent(MainActivity.this, ModalActivity.class);
-                            startActivity(modalIntent);
                             make_marker(point);
+                            ModalFragment fragment = ModalFragment.newInstance(point.getLatitude(), point.getLongitude());
+                            FragmentManager fm = getSupportFragmentManager();
+                            FragmentTransaction ft = fm.beginTransaction();
+                            ft.replace(R.id.flFragment, fragment);
+                            ft.commit();
                             return false;
                         });
                         // Create symbol manager object.
@@ -148,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 BitmapUtils.getBitmapFromDrawable(getResources().getDrawable(R.drawable.gps_icon)),
                                 true);
                         symbolManager.addClickListener(symbol -> {
-                            clicked_symbol = symbol;
                             LatLng location = symbol.getLatLng();
                             double lat = location.getLatitude();
                             double lon = location.getLongitude();
@@ -160,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                             mapboxMap.animateCamera(CameraUpdateFactory
                                     .newCameraPosition(position), 7000);
+                            ModalFragment.newInstance(lat, lon);
                             return false;
                         });
 

@@ -8,7 +8,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="600dp"
+        android:layout_height="672dp"
         tools:context=".examples.basics.SimpleMapViewActivity">
 
         <SearchView
@@ -28,6 +28,16 @@
             android:layout_margin="16dp"
             android:contentDescription="@string/submit"
             android:src="@drawable/crosshairs_gps_icon_136721" />
+
+        <FrameLayout
+            android:id="@+id/flFragment"
+            android:layout_width="match_parent"
+            android:layout_height="163dp"
+            android:layout_gravity="start|bottom"
+            android:background="#FFFFFF"
+            android:elevation="5dp">
+
+        </FrameLayout>
 
         <com.mapbox.mapboxsdk.maps.MapView
             android:id="@+id/mapView"
