@@ -3,7 +3,6 @@ package mobile.sharif.hw2;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -19,19 +18,19 @@ public class APIInterface {
     public APIInterface() {
     }
 
-    private void extractCoinFromResponse(String response) {
+    private void extractWordsFromResponse(String response) {
         try {
         } catch (Exception e) {
             Log.i("JSON", e.toString());
         }
     }
 
-    public void retrieveCoinFromApi() {
+    public void retrieveWords() {
 
         OkHttpClient okHttpClient = new OkHttpClient();
         String query = "LOS";
         String uri = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + query + ".json?access_token=" + api_key;
-        String url = Objects.requireNonNull(HttpUrl.parse(uri)).newBuilder().build().toString();
+        String url = HttpUrl.parse(uri).newBuilder().build().toString();
         Request request = new Request.Builder().url(url).build();
         okHttpClient.newCall(request).enqueue(new Callback() {
             @Override
@@ -46,7 +45,7 @@ public class APIInterface {
                     throw new IOException("Unexpected code " + response);
                 } else {
                     String resp = response.body().string();
-                    extractCoinFromResponse(resp);
+                    extractWordsFromResponse(resp);
                 }
             }
         });

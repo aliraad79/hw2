@@ -22,7 +22,7 @@ public class DbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + TABLE_NAME + " (" +
                     COLUMN_ID + " INTEGER PRIMARY KEY," +
                     COLUMN_NAME + " TEXT," +
-                    COLUMN_LONGITUDE + " TEXT," +
+                    COLUMN_LONGITUDE + " REAL," +
                     COLUMN_LATITUDE + " REAL)";
 
     private static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
@@ -50,7 +50,7 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL("delete from " + TABLE_NAME);
     }
 
-    public void putCoin(SQLiteDatabase db, MyLocation location) {
+    public void putLocation(SQLiteDatabase db, MyLocation location) {
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(DbHelper.COLUMN_NAME, location.getName());
