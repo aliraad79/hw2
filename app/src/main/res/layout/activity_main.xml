@@ -11,31 +11,12 @@
         android:layout_height="672dp"
         tools:context=".examples.basics.SimpleMapViewActivity">
 
-        <SearchView
-            android:id="@+id/search"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="#f00"
-            android:iconifiedByDefault="false">
-
-        </SearchView>
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="16dp"
-            android:contentDescription="@string/submit"
-            android:src="@drawable/crosshairs_gps_icon_136721" />
-
         <FrameLayout
             android:id="@+id/flFragment"
             android:layout_width="match_parent"
             android:layout_height="163dp"
             android:layout_gravity="start|bottom"
-            android:background="#FFFFFF"
-            >
+            android:background="#FFFFFF">
 
         </FrameLayout>
 
@@ -47,7 +28,25 @@
             app:mapbox_cameraTargetLng="-73.99155"
             app:mapbox_cameraZoom="11">
 
+            <SearchView
+                android:id="@+id/search"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="#f00"
+                android:iconifiedByDefault="false">
+
+            </SearchView>
+
         </com.mapbox.mapboxsdk.maps.MapView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/submit"
+            android:src="@drawable/crosshairs_gps_icon_136721" />
 
 
     </FrameLayout>
