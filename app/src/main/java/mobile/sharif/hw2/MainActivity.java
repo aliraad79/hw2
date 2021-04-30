@@ -44,12 +44,20 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import mobile.sharif.hw2.Fragment.HeadlessFragment;
+import mobile.sharif.hw2.Fragment.ModalFragment;
+
+import static mobile.sharif.hw2.Fragment.HeadlessFragment.HEADLESS_FRAGMENT_TAG;
+import static mobile.sharif.hw2.Fragment.ModalFragment.LATITUDE;
+import static mobile.sharif.hw2.Fragment.ModalFragment.LONGITUDE;
+
 /**
  * Use the Mapbox Core Library to receive updates when the device changes location.
  */
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener,
         SearchView.OnQueryTextListener {
 
+    private HeadlessFragment headlessFragment;
     private static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
     private static final long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
     private MapboxMap mapboxMap;
@@ -105,6 +113,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+
+        // Headless fragment for passing database between configuration changes
+        headlessFragment = (HeadlessFragment) getSupportFragmentManager()
+                .findFragmentByTag(HEADLESS_FRAGMENT_TAG);
+        if (headlessFragment == null) {
+            headlessFragment = new HeadlessFragment();
+            getSupportFragmentManager().beginTransaction().add(headlessFragment, HEADLESS_FRAGMENT_TAG).commit();
+        }
     }
 
     private void travelToLocation(double lat, double lon) {
@@ -140,40 +157,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onStyleLoaded(@NonNull Style style) {
 
                         mapboxMap.addOnMapLongClickListener(point -> {
-                            make_marker(point);
-
-                            FragmentManager fm = getSupportFragmentManager();
-                            FragmentTransaction ft = fm.beginTransaction();
-                            View frame = findViewById(R.id.flFragment);
-                            MyLocation temp = new MyLocation(point.getLongitude(), point.getLatitude());
-                            ModalFragment fragment = ModalFragment.newInstance(temp.getLocation());
-                            ft.replace(R.id.flFragment, fragment);
-                            ViewCompat.setElevation(frame, 5);
-                            ft.commit();
-
-                            return false;
-                        });
-
-                        // Create symbol manager object.
-                        symbolManager = new SymbolManager(mapView, mapboxMap, style);
-                        style.addImage("fire-station-15",
-                                BitmapUtils.getBitmapFromDrawable(getResources().getDrawable(R.drawable.gps_icon)),
-                                true);
-                        symbolManager.addClickListener(symbol -> {
-                            LatLng location = symbol.getLatLng();
-                            double lat = location.getLatitude();
-                            double lon = location.getLongitude();
-                            travelToLocation(lat, lon);
-
-                            FragmentManager fm = getSupportFragmentManager();
-                            FragmentTransaction ft = fm.beginTransaction();
-                            View frame = findViewById(R.id.flFragment);
-                            MyLocation temp = new MyLocation(lon, lat);
-                            ModalFragment fragment = ModalFragment.newInstance(temp.getLocation());
-                            ft.replace(R.id.flFragment, fragment);
-                            ViewCompat.setElevation(frame, 5);
-                            ft.commit();
-                            return false;
+                            Bundle bundle = new Bundle();
+                            bundle.putDouble(LONGITUDE, point.getLongitude());
+                            bundle.putDouble(LATITUDE, point.getLatitude());
+                            ModalFragment fragment = new ModalFragment();
+                            fragment.setArguments(bundle);
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.flFragment, fragment).commit();
+                            return true;
                         });
 
                         // Set non-data-driven properties.

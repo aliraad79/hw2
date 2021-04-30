@@ -9,10 +9,10 @@
     android:orientation="vertical"
     android:padding="15dp"
     android:showDividers="middle"
-    tools:context=".ModalFragment">
+    tools:context=".Fragment.ModalFragment">
 
     <TextView
-        android:id="@+id/LocTv"
+        android:id="@+id/locationCoordination"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Location Position"
