@@ -149,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                             ModalFragment fragment = ModalFragment.newInstance(temp.getLocation());
                             ft.replace(R.id.flFragment, fragment);
                             ViewCompat.setElevation(frame, 5);
-                            ft.addToBackStack(null);
                             ft.commit();
 
                             return false;

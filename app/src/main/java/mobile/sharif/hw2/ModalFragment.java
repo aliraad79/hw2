@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class ModalFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "location-string";
-
+    private static ModalFragment modalFragment;
     private String location_string;
 
     public ModalFragment() {
@@ -27,6 +27,7 @@ public class ModalFragment extends Fragment {
 
     public static ModalFragment newInstance(String param1) {
         ModalFragment fragment = new ModalFragment();
+        modalFragment = fragment;
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         fragment.setArguments(args);
@@ -55,6 +56,13 @@ public class ModalFragment extends Fragment {
             public void onClick(View v) {
                 Log.i("Info", "Button " + locationName.getText());
 
+            }
+        });
+        Button cancelButton = view.findViewById(R.id.cancelSaveLocation);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager().beginTransaction().remove(modalFragment).commit();
             }
         });
         return view;

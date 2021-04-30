@@ -11,6 +11,7 @@
     <string name="test">Test</string>
     <string name="location_name">Location Name</string>
     <string name="enter_name">Enter Location Name</string>
-    <string name="save">save</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 
 </resources>
