@@ -17,6 +17,8 @@ public class BookmarkActivity extends AppCompatActivity implements MyRecyclerVie
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        locations.add(0, new MyLocation(1.223, 12.312, "salam"));
+        locations.add(0, new MyLocation(1.9223, 12.3012, "salammm"));
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bookmark);
 
