@@ -13,7 +13,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private static final String COLUMN_NAME = "name";
     private static final String COLUMN_ID = "id";
     private static final String COLUMN_LONGITUDE = "longitude";
-    private static final String COLUMN_LATITUDE = "latitude ";
+    private static final String COLUMN_LATITUDE = "latitude";
 
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "locations.db";

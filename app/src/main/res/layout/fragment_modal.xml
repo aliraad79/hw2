@@ -4,33 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:divider="@drawable/empty_tall_divider"
     android:orientation="vertical"
+    android:padding="10dp"
+    android:showDividers="middle"
     tools:context=".ModalFragment">
-
 
     <TextView
         android:id="@+id/LocTv"
         android:layout_width="match_parent"
-        android:layout_height="30dp"
-         />
+        android:layout_height="wrap_content"
+        android:text="Location Position"
+        android:textStyle="bold" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="31dp"
-        android:text="@string/location_name" />
 
     <EditText
-        android:id="@+id/edit"
+        android:id="@+id/locationName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
+        android:gravity="center_horizontal"
+        android:hint="@string/enter_name"
         android:inputType="textPersonName"
-        android:hint="@string/enter_name" />
+        android:textAlignment="center" />
 
     <Button
-        android:id="@+id/button"
-        android:layout_width="140dp"
+        android:id="@+id/saveLocationButton"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
+        android:layout_gravity="end"
         android:text="@string/save" />
+
 </LinearLayout>

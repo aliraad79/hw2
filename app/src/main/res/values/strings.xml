@@ -10,7 +10,7 @@
     <string name="bookmark">BookMark</string>
     <string name="test">Test</string>
     <string name="location_name">Location Name</string>
-    <string name="enter_name">Enter Name</string>
+    <string name="enter_name">Enter Location Name</string>
     <string name="save">save</string>
 
 </resources>

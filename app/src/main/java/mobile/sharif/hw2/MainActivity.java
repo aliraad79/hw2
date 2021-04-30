@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
 
-
                         mapboxMap.addOnMapLongClickListener(point -> {
                             make_marker(point);
 
@@ -155,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                             return false;
                         });
+
                         // Create symbol manager object.
                         symbolManager = new SymbolManager(mapView, mapboxMap, style);
                         style.addImage("fire-station-15",
