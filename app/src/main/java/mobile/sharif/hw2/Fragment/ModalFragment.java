@@ -43,7 +43,7 @@ public class ModalFragment extends Fragment {
         if (getArguments() != null) {
             longitude = getArguments().getDouble(LONGITUDE);
             latitude = getArguments().getDouble(LATITUDE);
-            locationString = "Save Location: (" + longitude + ", " + latitude + ")";
+            locationString = "Save Location: (" + String.format("%.2f", longitude) + ", " + String.format("%.2f", latitude) + ")";
         }
         if (getFragmentManager() != null) {
             headlessFragment = (HeadlessFragment) getFragmentManager()
@@ -68,12 +68,16 @@ public class ModalFragment extends Fragment {
                 SQLiteDatabase db = headlessFragment.db;
                 Log.i("Info", dbHelper.getDatabaseName());
                 dbHelper.putLocation(db, new MyLocation(longitude, latitude, locationName.getText().toString()));
+                Log.i("Info", String.valueOf(dbHelper.getAllLocations(db).size()));
+                Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().remove(modalFragment).commit();
+                modalFragment = null;
             }
         });
         Button cancelButton = view.findViewById(R.id.cancelSaveLocation);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // todo: put these two lines in onDestroy()
                 Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().remove(modalFragment).commit();
                 modalFragment = null;
             }
