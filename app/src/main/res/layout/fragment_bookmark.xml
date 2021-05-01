@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <SearchView
-        android:id="@+id/search"
+        android:id="@+id/bookmark_search_view"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"

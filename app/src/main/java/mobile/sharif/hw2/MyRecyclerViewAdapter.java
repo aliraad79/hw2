@@ -50,14 +50,16 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView name;
         TextView location;
-        ImageView image;
+        ImageView deleteButton;
 
         ViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.textView);
             location = itemView.findViewById(R.id.textView2);
-            image = itemView.findViewById(R.id.imageView);
+            deleteButton = itemView.findViewById(R.id.delete_button);
             itemView.setOnClickListener(this);
+
+
         }
 
         @Override
