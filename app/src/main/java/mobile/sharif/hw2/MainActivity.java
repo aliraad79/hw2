@@ -19,9 +19,9 @@ import static mobile.sharif.hw2.Fragment.HeadlessFragment.HEADLESS_FRAGMENT_TAG;
 public class MainActivity extends AppCompatActivity {
 
     private HeadlessFragment headlessFragment;
-    private MapFragment mapFragment;
-    private BookmarkFragment bookmarkFragment;
-    private SettingFragment settingFragment;
+    private MapFragment mapFragment = new MapFragment();
+    private BookmarkFragment bookmarkFragment = new BookmarkFragment();
+    private SettingFragment settingFragment = new SettingFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,38 +38,30 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.fragment_container, mapFragment)
                 .commit();
 
-        BottomNavigationView nav_bar = findViewById(R.id.bottom_navigation);
-        nav_bar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+        BottomNavigationView navbar = findViewById(R.id.bottom_navigation);
+        navbar.getMenu().getItem(1).setChecked(true);
+        navbar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.bookmark:
-                        if (savedInstanceState != null) {
-                            bookmarkFragment = (BookmarkFragment) getSupportFragmentManager().getFragment(savedInstanceState, "bookmarkFragment");
-                        } else {
-                            bookmarkFragment = new BookmarkFragment();
-                        }
-                        getSupportFragmentManager().beginTransaction()
+                        if (menuItem.isChecked()) break;
+                        getSupportFragmentManager()
+                                .beginTransaction()
                                 .replace(R.id.fragment_container, bookmarkFragment).commit();
                         break;
 
                     case R.id.setting:
-                        if (settingFragment != null) {
-                            settingFragment = (SettingFragment) getSupportFragmentManager().getFragment(savedInstanceState, "settingFragment");
-                        } else {
-                            settingFragment = new SettingFragment();
-                        }
-                        getSupportFragmentManager().beginTransaction()
+                        if (menuItem.isChecked()) break;
+                        getSupportFragmentManager()
+                                .beginTransaction()
                                 .replace(R.id.fragment_container, settingFragment).commit();
                         break;
 
                     case R.id.map:
-                        if (savedInstanceState != null) {
-                            mapFragment = (MapFragment) getSupportFragmentManager().getFragment(savedInstanceState, "mapFragment");
-                        } else {
-                            mapFragment = new MapFragment();
-                        }
-                        getSupportFragmentManager().beginTransaction()
+                        if (menuItem.isChecked()) break;
+                        getSupportFragmentManager()
+                                .beginTransaction()
                                 .replace(R.id.fragment_container, mapFragment).commit();
                         break;
                 }
@@ -85,19 +77,4 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().add(headlessFragment, HEADLESS_FRAGMENT_TAG).commit();
         }
     }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (mapFragment != null) {
-            getSupportFragmentManager().putFragment(outState, "mapFragment", mapFragment);
-        }
-        if (bookmarkFragment != null) {
-            getSupportFragmentManager().putFragment(outState, "bookmarkFragment", bookmarkFragment);
-        }
-        if (settingFragment != null) {
-            getSupportFragmentManager().putFragment(outState, "settingFragment", settingFragment);
-        }
-    }
-
 }
