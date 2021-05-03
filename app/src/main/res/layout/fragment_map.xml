@@ -5,12 +5,20 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
     <SearchView
         android:id="@+id/search"
-        android:layout_width="fill_parent"
+        android:layout_width="337dp"
         android:layout_height="wrap_content"
-        android:background="#f00"
+        android:layout_gravity="top|center_horizontal"
+        android:background="#673AB7"
+        android:elevation="2dp"
         android:iconifiedByDefault="false" />
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="337dp"
+        android:layout_height="552dp"
+        android:layout_gravity="center" />
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"

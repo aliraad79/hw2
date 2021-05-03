@@ -7,6 +7,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -32,11 +36,15 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
+import mobile.sharif.hw2.APIInterface;
+import mobile.sharif.hw2.MainActivity;
 import mobile.sharif.hw2.R;
 
 import static android.os.Looper.getMainLooper;
@@ -59,6 +67,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
     SymbolManager symbolManager;
     private final MapFragment.LocationChangeListeningActivityLocationCallback callback =
             new MapFragment.LocationChangeListeningActivityLocationCallback(this);
+    SearchView searchView;
+    ListView listView;
+    ArrayList<String> list;
+    ArrayAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -87,6 +99,50 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
+        APIInterface api = new APIInterface();
+        searchView = view.findViewById(R.id.search);
+        listView = view.findViewById(R.id.listView);
+        list = new ArrayList<>();
+        list.add("Apple");
+        list.add("Banana");
+        list.add("Banana2");
+        list.add("Banana3");
+        list.add("Banana4");
+        list.add("Pineapple");
+        list.add("Papaya");
+        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, list);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//                travelToLocation();
+                Toast.makeText(getActivity(), view.toString(), Toast.LENGTH_SHORT).show();
+                ViewCompat.setElevation(listView, 3);
+            }
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                ViewCompat.setElevation(listView, 3);
+                api.retrieveWords(query, list);
+                if (list.contains(query)) {
+                    adapter.notifyDataSetChanged();
+                    Log.i("List", list.toString());
+                    adapter.getFilter().filter(query);
+                } else {
+                    Toast.makeText(getActivity(), "No Match found", Toast.LENGTH_LONG).show();
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ViewCompat.setElevation(listView, 3);
+                adapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+
         return view;
     }
 
@@ -106,7 +162,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Permiss
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
 
-        mapboxMap.setStyle(Style.TRAFFIC_NIGHT,
+        mapboxMap.setStyle(Style.LIGHT,
                 new Style.OnStyleLoaded() {
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
