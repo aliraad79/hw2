@@ -20,14 +20,15 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:background="#f00"
-                android:iconifiedByDefault="false" />
+                android:background="@color/teal_200" />
+
             <TextView
                 android:id="@+id/speed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:text="@string/speed" />
+
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"

@@ -7,6 +7,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -38,6 +39,7 @@ import com.mapbox.mapboxsdk.maps.MapView;
 import com.mapbox.mapboxsdk.maps.MapboxMap;
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 
@@ -54,8 +56,10 @@ import static mobile.sharif.hw2.Fragment.HeadlessFragment.HEADLESS_FRAGMENT_TAG;
 import static mobile.sharif.hw2.Fragment.ModalFragment.LATITUDE;
 import static mobile.sharif.hw2.Fragment.ModalFragment.LONGITUDE;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener , GPSCallback{
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, GPSCallback {
 
+    public BottomNavigationView navbar;
+    public SymbolManager symbolManager;
     private HeadlessFragment headlessFragment;
     private BookmarkFragment bookmarkFragment = new BookmarkFragment();
     private SettingFragment settingFragment = new SettingFragment();
@@ -65,16 +69,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private MapView mapView;
     private PermissionsManager permissionsManager;
     private LocationEngine locationEngine;
-    SymbolManager symbolManager;
     private final MainActivity.LocationChangeListeningActivityLocationCallback callback =
             new LocationChangeListeningActivityLocationCallback(this);
 
     // speed meter fields
     private GPSManager gpsManager = null;
     private double speed = 0.0;
-    Boolean isGPSEnabled=false;
+    Boolean isGPSEnabled = false;
     LocationManager locationManager;
-    double currentSpeed,kmphSpeed;
+    double currentSpeed, kmphSpeed;
     TextView txtview;
 
     @Override
@@ -86,17 +89,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_main);
-        txtview=(TextView)findViewById(R.id.speed);
+        txtview = (TextView) findViewById(R.id.speed);
         try {
-            if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 101);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         getCurrentSpeed(txtview);
 
-        BottomNavigationView navbar = findViewById(R.id.bottom_navigation);
+        navbar = findViewById(R.id.bottom_navigation);
         navbar.getMenu().getItem(1).setChecked(true);
         navbar.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -154,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    private void travelToLocation(double lat, double lon) {
+    public void travelToLocation(double lat, double lon) {
         CameraPosition position = new CameraPosition.Builder()
                 .target(new LatLng(lat, lon)) // Sets the new camera position
                 .zoom(15) // Sets the zoom
@@ -196,13 +199,17 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 });
     }
 
-    private void make_marker(LatLng point) {
+    public Symbol makeMarker(LatLng point) {
         SymbolOptions symbolOptions = new SymbolOptions()
                 .withLatLng(new LatLng(point.getLatitude(), point.getLongitude()))
-                .withIconImage("fire-station-15")
+                .withIconImage("fire-station-15") // todo ali: replace with red pointer
                 .withIconSize(1.3f)
                 .withSymbolSortKey(10.0f);
-        symbolManager.create(symbolOptions);
+        return symbolManager.create(symbolOptions);
+    }
+
+    public void deleteMarker(Symbol symbol) {
+        symbolManager.delete(symbol);
     }
 
     /**
@@ -328,32 +335,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     }
+
     // speedMeter methods
-    public void getCurrentSpeed(View view){
+    public void getCurrentSpeed(View view) {
         txtview.setText(getString(R.string.speed));
-        locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         gpsManager = new GPSManager(MainActivity.this);
         isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        if(isGPSEnabled) {
+        if (isGPSEnabled) {
             gpsManager.startListening(getApplicationContext());
             gpsManager.setGPSCallback(this);
         } else {
             gpsManager.showSettingsAlert();
         }
     }
+
     @SuppressLint("SetTextI18n")
     @Override
     public void onGPSUpdate(Location location) {
         speed = location.getSpeed();
-        currentSpeed = round(speed,3, BigDecimal.ROUND_HALF_UP);
-        kmphSpeed = round((currentSpeed*3.6),3,BigDecimal.ROUND_HALF_UP);
-        txtview.setText(kmphSpeed+"km/h");
+        currentSpeed = round(speed, 3, BigDecimal.ROUND_HALF_UP);
+        kmphSpeed = round((currentSpeed * 3.6), 3, BigDecimal.ROUND_HALF_UP);
+        txtview.setText(kmphSpeed + "km/h");
     }
+
     public static double round(double unrounded, int precision, int roundingMode) {
         BigDecimal bd = new BigDecimal(unrounded);
         BigDecimal rounded = bd.setScale(precision, roundingMode);
         return rounded.doubleValue();
     }
+
     @Override
     public void onStart() {
         super.onStart();

@@ -2,19 +2,23 @@ package mobile.sharif.hw2;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAdapter.ViewHolder> {
 
     private final List<MyLocation> mData;
+    private final List<MyLocation> mDataCopy = new ArrayList<>();
     private final LayoutInflater mInflater;
     public ItemClickListener mClickListener;
 
@@ -22,6 +26,7 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
     public MyRecyclerViewAdapter(Context context, List<MyLocation> data) {
         this.mInflater = LayoutInflater.from(context);
         this.mData = data;
+        mDataCopy.addAll(data);
     }
 
     // inflates the row layout from xml when needed
@@ -51,21 +56,44 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
         TextView name;
         TextView location;
         ImageView deleteButton;
+        LinearLayout clickableArea;
 
         ViewHolder(View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.textView);
             location = itemView.findViewById(R.id.textView2);
             deleteButton = itemView.findViewById(R.id.delete_button);
-            itemView.setOnClickListener(this);
-
-
+            clickableArea = itemView.findViewById(R.id.go_to_point);
+            deleteButton.setOnClickListener(this);
+            clickableArea.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
+            if (view.equals(deleteButton)) {
+                mClickListener.onDeleteButtonClick(getAdapterPosition());
+                mData.remove(getAdapterPosition());
+                notifyItemRemoved(getAdapterPosition());
+                notifyItemRangeChanged(getAdapterPosition(), mData.size());
+            } else if (mClickListener != null) {
+                mClickListener.onItemClick(view, getAdapterPosition());
+            }
         }
+    }
+
+    public void filter(String text) {
+        mData.clear();
+        if (text.isEmpty()) {
+            mData.addAll(mDataCopy);
+        } else {
+            text = text.toLowerCase();
+            for (MyLocation location : mDataCopy) {
+                if (location.getName().toLowerCase().contains(text)) {
+                    mData.add(location);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     // convenience method for getting data at click position
@@ -80,6 +108,8 @@ public class MyRecyclerViewAdapter extends RecyclerView.Adapter<MyRecyclerViewAd
 
     // parent activity will implement this method to respond to click events
     public interface ItemClickListener {
+        void onDeleteButtonClick(int position);
+
         void onItemClick(View view, int position);
     }
 }

@@ -59,6 +59,10 @@ public class DbHelper extends SQLiteOpenHelper {
         long row_id = db.insert(DbHelper.TABLE_NAME, null, values);
     }
 
+    public void removeLocation(SQLiteDatabase db, MyLocation location) {
+        // todo ali
+    }
+
     public MyLocation getLocation(Cursor cursor) {
         String name = cursor.getString(cursor.getColumnIndexOrThrow(DbHelper.COLUMN_NAME));
         double longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(DbHelper.COLUMN_LONGITUDE));
