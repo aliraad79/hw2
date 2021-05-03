@@ -14,5 +14,9 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="speed">speed</string>
+    <string name="toggle_dark_mode">Toggle Dark Mode</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="delete_data">Delete Data</string>
+    <string name="delete_app_data_from_phone">Delete App Data From Phone</string>
 
 </resources>
