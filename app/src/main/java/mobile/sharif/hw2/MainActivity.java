@@ -1,15 +1,21 @@
 package mobile.sharif.hw2;
 
 import android.annotation.SuppressLint;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -36,6 +42,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 
 import java.lang.ref.WeakReference;
+import java.math.BigDecimal;
 import java.util.List;
 
 import mobile.sharif.hw2.Fragment.BookmarkFragment;
@@ -47,7 +54,7 @@ import static mobile.sharif.hw2.Fragment.HeadlessFragment.HEADLESS_FRAGMENT_TAG;
 import static mobile.sharif.hw2.Fragment.ModalFragment.LATITUDE;
 import static mobile.sharif.hw2.Fragment.ModalFragment.LONGITUDE;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener , GPSCallback{
 
     private HeadlessFragment headlessFragment;
     private BookmarkFragment bookmarkFragment = new BookmarkFragment();
@@ -62,6 +69,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private final MainActivity.LocationChangeListeningActivityLocationCallback callback =
             new LocationChangeListeningActivityLocationCallback(this);
 
+    // speed meter fields
+    private GPSManager gpsManager = null;
+    private double speed = 0.0;
+    Boolean isGPSEnabled=false;
+    LocationManager locationManager;
+    double currentSpeed,kmphSpeed;
+    TextView txtview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +86,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // This contains the MapView in XML and needs to be called after the access token is configured.
         setContentView(R.layout.activity_main);
+        txtview=(TextView)findViewById(R.id.speed);
+        try {
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
+                ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 101);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        getCurrentSpeed(txtview);
 
         BottomNavigationView navbar = findViewById(R.id.bottom_navigation);
         navbar.getMenu().getItem(1).setChecked(true);
@@ -305,7 +328,32 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     }
-
+    // speedMeter methods
+    public void getCurrentSpeed(View view){
+        txtview.setText(getString(R.string.speed));
+        locationManager = (LocationManager)getSystemService(LOCATION_SERVICE);
+        gpsManager = new GPSManager(MainActivity.this);
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        if(isGPSEnabled) {
+            gpsManager.startListening(getApplicationContext());
+            gpsManager.setGPSCallback(this);
+        } else {
+            gpsManager.showSettingsAlert();
+        }
+    }
+    @SuppressLint("SetTextI18n")
+    @Override
+    public void onGPSUpdate(Location location) {
+        speed = location.getSpeed();
+        currentSpeed = round(speed,3, BigDecimal.ROUND_HALF_UP);
+        kmphSpeed = round((currentSpeed*3.6),3,BigDecimal.ROUND_HALF_UP);
+        txtview.setText(kmphSpeed+"km/h");
+    }
+    public static double round(double unrounded, int precision, int roundingMode) {
+        BigDecimal bd = new BigDecimal(unrounded);
+        BigDecimal rounded = bd.setScale(precision, roundingMode);
+        return rounded.doubleValue();
+    }
     @Override
     public void onStart() {
         super.onStart();
@@ -344,6 +392,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onDestroy() {
         super.onDestroy();
+        gpsManager.stopListening();
+        gpsManager.setGPSCallback(null);
+        gpsManager = null;
         // Prevent leaks
         if (locationEngine != null) {
             locationEngine.removeLocationUpdates(callback);
