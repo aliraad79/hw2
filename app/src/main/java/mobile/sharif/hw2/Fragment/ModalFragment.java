@@ -74,6 +74,7 @@ public class ModalFragment extends Fragment {
                 SQLiteDatabase db = headlessFragment.db;
                 dbHelper.putLocation(db, new MyLocation(longitude, latitude, locationName.getText().toString()));
                 Objects.requireNonNull(getActivity()).getSupportFragmentManager().beginTransaction().remove(modalFragment).commit();
+                ((MainActivity) modalFragment.getActivity()).deleteMarker(symbol);
                 modalFragment = null;
             }
         });
