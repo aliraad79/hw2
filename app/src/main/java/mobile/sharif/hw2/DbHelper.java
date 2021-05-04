@@ -60,7 +60,10 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public void removeLocation(SQLiteDatabase db, MyLocation location) {
-        // todo ali
+        // Define 'where' part of query.
+        String selection = COLUMN_NAME + " LIKE ?";
+        String[] selectionArgs = {location.getName()};
+        int deletedRows = db.delete(TABLE_NAME, selection, selectionArgs);
     }
 
     public MyLocation getLocation(Cursor cursor) {

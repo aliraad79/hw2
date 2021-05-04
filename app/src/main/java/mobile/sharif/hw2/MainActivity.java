@@ -2,6 +2,7 @@ package mobile.sharif.hw2;
 
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
@@ -36,6 +37,9 @@ import com.mapbox.android.core.location.LocationEngineRequest;
 import com.mapbox.android.core.location.LocationEngineResult;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.geojson.Feature;
+import com.mapbox.geojson.FeatureCollection;
+import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.Mapbox;
 import com.mapbox.mapboxsdk.camera.CameraPosition;
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
@@ -51,6 +55,8 @@ import com.mapbox.mapboxsdk.maps.Style;
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer;
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
 
 import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
@@ -62,6 +68,9 @@ import mobile.sharif.hw2.Fragment.HeadlessFragment;
 import mobile.sharif.hw2.Fragment.ModalFragment;
 import mobile.sharif.hw2.Fragment.SettingFragment;
 
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement;
+import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage;
 import static mobile.sharif.hw2.Fragment.HeadlessFragment.HEADLESS_FRAGMENT_TAG;
 import static mobile.sharif.hw2.Fragment.ModalFragment.LATITUDE;
 import static mobile.sharif.hw2.Fragment.ModalFragment.LONGITUDE;
@@ -71,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
     private static final long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
     public static final int RESULTS = 1;
+    private static final String ICON_ID = "ICON_ID";
     public static final String FOUND_LOCATIONS = "FOUND";
 
     public BottomNavigationView navbar;
@@ -197,13 +207,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         APIInterface api = new APIInterface();
         searchView = findViewById(R.id.search);
         listView = findViewById(R.id.listView);
-        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1){
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent){
+            public View getView(int position, View convertView, ViewGroup parent) {
                 View view = super.getView(position, convertView, parent);
-                ((TextView)view.findViewById(android.R.id.text1)).setTextColor(style == Style.LIGHT ? Color.WHITE : Color.RED); // here can be your logic
+                ((TextView) view.findViewById(android.R.id.text1)).setTextColor(style == Style.LIGHT ? Color.WHITE : Color.RED); // here can be your logic
                 return view;
-            };
+            }
+
+            ;
         };
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -248,7 +260,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
 
-        mapboxMap.setStyle(Style.LIGHT,
+        mapboxMap.setStyle(new Style.Builder().fromUri(Style.LIGHT)
+                        .withImage(ICON_ID, BitmapFactory.decodeResource(
+                                MainActivity.this.getResources(), R.drawable.gps_icon)),
                 new Style.OnStyleLoaded() {
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
@@ -277,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public Symbol makeMarker(LatLng point) {
         SymbolOptions symbolOptions = new SymbolOptions()
                 .withLatLng(new LatLng(point.getLatitude(), point.getLongitude()))
-                .withIconImage("fire-station-15") // todo ali: replace with red pointer
+                .withIconImage(ICON_ID)
                 .withIconSize(1.3f)
                 .withSymbolSortKey(10.0f);
         return symbolManager.create(symbolOptions);
