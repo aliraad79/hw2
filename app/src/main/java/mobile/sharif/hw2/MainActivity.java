@@ -2,6 +2,7 @@ package mobile.sharif.hw2;
 
 import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -76,7 +78,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private HeadlessFragment headlessFragment;
     private BookmarkFragment bookmarkFragment = new BookmarkFragment();
     private SettingFragment settingFragment = new SettingFragment();
-    private MapboxMap mapboxMap;
+    public static MapboxMap mapboxMap;
+    public static String style;
     private MapView mapView;
     private PermissionsManager permissionsManager;
     private LocationEngine locationEngine;
@@ -91,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     double currentSpeed, kmphSpeed;
     TextView txtview;
     SearchView searchView;
-    ListView listView;
+    public static ListView listView;
     ArrayAdapter adapter;
     private MyHandler handler;
 
@@ -194,14 +197,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         APIInterface api = new APIInterface();
         searchView = findViewById(R.id.search);
         listView = findViewById(R.id.listView);
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1){
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent){
+                View view = super.getView(position, convertView, parent);
+                ((TextView)view.findViewById(android.R.id.text1)).setTextColor(style == Style.LIGHT ? Color.WHITE : Color.RED); // here can be your logic
+                return view;
+            };
+        };
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ViewCompat.setElevation(listView, 1);
                 MyLocation location = (MyLocation) parent.getAdapter().getItem(position);
-                travelToLocation(location.getLatitude(),location.getLongitude());
+                travelToLocation(location.getLatitude(), location.getLongitude());
             }
         });
 
