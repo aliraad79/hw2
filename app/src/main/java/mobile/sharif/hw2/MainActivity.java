@@ -6,10 +6,16 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -45,6 +52,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 
 import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import mobile.sharif.hw2.Fragment.BookmarkFragment;
@@ -58,13 +66,16 @@ import static mobile.sharif.hw2.Fragment.ModalFragment.LONGITUDE;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, PermissionsListener, GPSCallback {
 
+    private static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
+    private static final long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
+    public static final int RESULTS = 1;
+    public static final String FOUND_LOCATIONS = "FOUND";
+
     public BottomNavigationView navbar;
     public SymbolManager symbolManager;
     private HeadlessFragment headlessFragment;
     private BookmarkFragment bookmarkFragment = new BookmarkFragment();
     private SettingFragment settingFragment = new SettingFragment();
-    private static final long DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L;
-    private static final long DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5;
     private MapboxMap mapboxMap;
     private MapView mapView;
     private PermissionsManager permissionsManager;
@@ -79,6 +90,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     LocationManager locationManager;
     double currentSpeed, kmphSpeed;
     TextView txtview;
+    SearchView searchView;
+    ListView listView;
+    ArrayAdapter adapter;
+    private MyHandler handler;
+
+    public static class MyHandler extends Handler {
+        private final WeakReference<MainActivity> mainActivityWeakReference;
+
+        public MyHandler(MainActivity mainActivity) {
+            this.mainActivityWeakReference = new WeakReference<>(mainActivity);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            MainActivity mainActivity = mainActivityWeakReference.get();
+            if (msg.what == RESULTS) {
+                Bundle bundle = msg.getData();
+                ArrayList<MyLocation> locations = (ArrayList<MyLocation>) bundle.getSerializable(FOUND_LOCATIONS);
+                mainActivity.adapter.clear();
+                mainActivity.adapter.addAll(locations);
+                mainActivity.adapter.notifyDataSetChanged();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -154,6 +189,36 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView = findViewById(R.id.map_view);
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
+
+        handler = new MyHandler(this);
+        APIInterface api = new APIInterface();
+        searchView = findViewById(R.id.search);
+        listView = findViewById(R.id.listView);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ViewCompat.setElevation(listView, 1);
+                MyLocation location = (MyLocation) parent.getAdapter().getItem(position);
+                travelToLocation(location.getLatitude(),location.getLongitude());
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                ViewCompat.setElevation(listView, 5);
+                api.retrieveWords(query, handler);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ViewCompat.setElevation(listView, 5);
+                return false;
+            }
+        });
     }
 
 
@@ -173,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(@NonNull final MapboxMap mapboxMap) {
         this.mapboxMap = mapboxMap;
 
-        mapboxMap.setStyle(Style.TRAFFIC_NIGHT,
+        mapboxMap.setStyle(Style.LIGHT,
                 new Style.OnStyleLoaded() {
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {

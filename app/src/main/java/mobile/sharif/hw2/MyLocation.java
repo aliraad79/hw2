@@ -1,8 +1,9 @@
 package mobile.sharif.hw2;
 
-import android.annotation.SuppressLint;
 
-public class MyLocation {
+import java.io.Serializable;
+
+public class MyLocation implements Serializable {
     private double longitude;
     private double latitude;
     private String name;
@@ -36,4 +37,8 @@ public class MyLocation {
         return lat + " " + lon;
     }
 
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }

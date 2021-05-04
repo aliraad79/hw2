@@ -1,6 +1,9 @@
 package mobile.sharif.hw2;
 
+import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,8 +22,8 @@ public class APIInterface {
     public APIInterface() {
     }
 
-    private void extractWordsFromResponse(String response, ArrayList<String> list) {
-        ArrayList<String> foundLocations = new ArrayList<>();
+    private void extractWordsFromResponse(String response, MainActivity.MyHandler handler) {
+        ArrayList<MyLocation> foundLocations = new ArrayList<>();
         try {
             JSONArray arr = new JSONObject(response).getJSONArray("features");
             for (int i = 0; i < arr.length(); i++) {
@@ -28,15 +31,21 @@ public class APIInterface {
                 String text = obj.getString("text");
                 JSONArray center = obj.getJSONArray("center");
                 MyLocation temp = new MyLocation(Double.parseDouble(center.getString(0)), Double.parseDouble(center.getString(1)), text);
-                list.add(text);
+                foundLocations.add(temp);
                 Log.i("Query", text);
             }
+            Message msg = new Message();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(MainActivity.FOUND_LOCATIONS,foundLocations);
+            msg.setData(bundle);
+            msg.what = MainActivity.RESULTS;
+            handler.sendMessage(msg);
         } catch (Exception e) {
             Log.i("JSON", e.toString());
         }
     }
 
-    public void retrieveWords(String query, ArrayList<String> list) {
+    public void retrieveWords(String query, MainActivity.MyHandler handler) {
 
         OkHttpClient okHttpClient = new OkHttpClient();
         String api_key = "sk.eyJ1IjoicmFhZHRlZCIsImEiOiJja25zdHRtM3kwN3RyMnVuM2lzZ2FxajRvIn0.XjMBN0r7YwG_Xpl6dwc4Lw";
@@ -56,7 +65,7 @@ public class APIInterface {
                     throw new IOException("Unexpected code " + response);
                 } else {
                     String resp = response.body().string();
-                    extractWordsFromResponse(resp, list);
+                    extractWordsFromResponse(resp, handler);
                 }
             }
         });
